@@ -7,6 +7,7 @@ import sqlite3
 import os
 import imagehash
 from PIL import Image as PILImage
+from features.camera_capture import take_photo
 
 #Load inventory
 inventory = pd.read_csv("inventory_data.csv")
@@ -106,6 +107,8 @@ def show_history():
     for row in c.fetchall():
         hist_table.insert("", "end", values=row)
 
+take_image_button = tk.Button(root, text="Take Photo", command=lambda: take_photo(root, identify_item, c, conn))
+take_image_button.pack(pady=10)
 tk.Button(root, text="View History", command=show_history).pack(pady=5)
 
 root.mainloop()
