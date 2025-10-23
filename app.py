@@ -18,7 +18,7 @@ reader = easyocr.Reader(['en'], gpu=False)
 conn = sqlite3.connect('history.db')
 c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS search_history
-             (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, part_number TEXT, result TEXT)''')
+             (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, part_number TEXT, result TEXT, time DATETIME)''')
 conn.commit()
 
 # Compare images using hash similarity
@@ -57,7 +57,7 @@ canvas = tk.Canvas(root, width=300, height=300)
 canvas.pack()
 
 def upload_image():
-    file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg;*.png;*.jpe")])
+    file_path = filedialog.askopenfilename(filetypes=[("database_images", "*.jpg;*.png;*.jpe")])
     if not file_path:
         return
     
@@ -67,17 +67,20 @@ def upload_image():
     canvas.create_image(150, 150, image=photo)
     canvas.image = photo
     
+    from datetime import datetime
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
     results = identify_item(file_path)
     if results:
         result_box.delete(*result_box.get_children())
         for item in results[:5]:
             result_box.insert("", "end", values=item[:-1])
             #save top match to history
-            c.execute("INSERT INTO search_history (item_name, part_number, result) VALUES (?, ?, ?)", (item[0], item[1], "Match"))
+            c.execute("INSERT INTO search_history (item_name, part_number, result, time) VALUES (?, ?, ?, ?)", (item[0], item[1], "Match", current_time))
             conn.commit()
     else:
         messagebox.showinfo("No match", "No matching item found.")
-        c.execute("INSERT INTO search_history (item_name, part_number, result) VALUES (?, ?, ?)", ("Unknown", "Unknown", "No match"))
+        c.execute("INSERT INTO search_history (item_name, part_number, result, time) VALUES (?, ?, ?, ?)", ("Unknown", "Unknown", "No match", current_time))
         conn.commit()
 
 upload_button = tk.Button(root, text="Upload Image", command=upload_image)
@@ -94,12 +97,12 @@ def show_history():
     history_window.title("Search History")
     tk.Label(history_window, text="Search History", font=("Arial", 12, "bold")).pack(pady=5)
     
-    hist_table = ttk.Treeview(history_window, columns=("Item", "Part", "Result"), show="headings", height=10)
-    for col in ("Item", "Part", "Result"):
+    hist_table = ttk.Treeview(history_window, columns=("Item", "Part", "Result", "Time"), show="headings", height=10)
+    for col in ("Item", "Part", "Result", "Time"):
         hist_table.heading(col, text=col)
     hist_table.pack()
     
-    c.execute("SELECT item_name, part_number, result FROM search_history ORDER BY id DESC LIMIT 20")
+    c.execute("SELECT item_name, part_number, result, time FROM search_history ORDER BY id DESC LIMIT 20")
     for row in c.fetchall():
         hist_table.insert("", "end", values=row)
 

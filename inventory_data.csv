@@ -1,4 +1,4 @@
 item_id,item_name,part_number,location,stock_qty,image_path
-1001,Blue Widget,BW-302,Shelf A3,24,images/mouse.jpe
-1002,Red Bolt,RB-222,Shelf B1,48,images/mouse.jpe
-1003,Metal Clamp,MC-911,Shelf C4,12,images/mouse.jpe
+1001,Blue Widget,BW-302,Shelf A3,24,database_images/mouse.jpe
+1002,Red Bolt,RB-222,Shelf B1,48,database_images/mouse.jpe
+1003,Metal Clamp,MC-911,Shelf C4,12,database_images/mouse.jpe
