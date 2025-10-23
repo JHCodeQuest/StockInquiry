@@ -1,1 +1,8 @@
-tkinter
+# On macOS with Apple Silicon, installing tensorflow-macos may fail.
+# Use `pip install tensorflow` + `tensorflow-metal` instead, or use Miniforge environment.
+tensorflow>=2.16
+tensorflow-metal>=1.0
+pillow>=10.0.0
+opencv-python>=4.10
+scikit-learn>=1.4
+numpy>=1.26
